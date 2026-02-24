@@ -7,7 +7,7 @@ export const journeyItems = [
     start: { month: 9, year: 2024 },
     end: { month: 12, year: 2025 },
     details: [
-      "GPA: 3.63/4",
+      "GPA: 3.63 / 4",
       "President, DSI Student Council",
       "TA for Deep Learning for NLP"
     ],
@@ -24,6 +24,18 @@ export const journeyItems = [
     details: [
       "Improved PD accuracy by 10%",
       "Optimized SAS risk pipelines"
+    ],
+    images: []
+  },
+  {
+    id: 3,
+    type: "education",
+    title: "Delhi Technological University (formerly Delhi College of Engineering)",
+    subtitle: "B.Tech. Mathematics and Computing",
+    start: {month: 8, year: 2019},
+    end: {month:5, year:2023},
+    details: [
+      "CGPA: 8.92 / 10"
     ],
     images: []
   }
