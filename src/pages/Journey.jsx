@@ -23,12 +23,42 @@ const fmtLong = (d) =>
     year: "numeric",
   });
 
-/* ─── track assignment (type-based: education=0, experience=1) ── */
+/* ─── track assignment ───────────────────────────────────────
+ *  Track 0 : Education
+ *  Track 1 : Experience primary
+ *  Track 2 : Experience overflow (longer-duration colliders)
+ * ─────────────────────────────────────────────────────────── */
 function assignTracks(items) {
-  return items.map((item) => ({
-    ...item,
-    track: item.type === "education" ? 0 : 1,
-  }));
+  const edu = items.filter((i) => i.type === "education");
+  // Sort experience by duration descending so longer items get first pick of primary track
+  const exp = items
+    .filter((i) => i.type === "experience")
+    .map((i) => ({ ...i, _dur: toMonths(i.end) - toMonths(i.start) }))
+    .sort((a, b) => b._dur - a._dur);
+
+  const expTracks = [[], []]; // index 0 = primary (track 1), index 1 = overflow (track 2)
+
+  const assignedExp = exp.map((item) => {
+    const s = toMonths(item.start);
+    const e = toMonths(item.end);
+    for (let sub = 0; sub < 2; sub++) {
+      const fits = expTracks[sub].every(
+        (placed) => e <= toMonths(placed.start) || s >= toMonths(placed.end)
+      );
+      if (fits) {
+        expTracks[sub].push(item);
+        return { ...item, track: sub + 1 };
+      }
+    }
+    // Safety fallback
+    expTracks[1].push(item);
+    return { ...item, track: 2 };
+  });
+
+  return [
+    ...edu.map((i) => ({ ...i, track: 0 })),
+    ...assignedExp,
+  ];
 }
 
 /* ─── Slideshow ──────────────────────────────────────────── */
@@ -120,7 +150,7 @@ export default function Journey() {
   const scrollRef = useRef(null);
 
   const trackedItems = useMemo(() => assignTracks(journeyItems), []);
-  const numTracks = 2;
+  const numTracks = 3;
 
   const minMonth = useMemo(
     () => Math.min(...trackedItems.map((i) => toMonths(i.start))),
@@ -181,13 +211,17 @@ export default function Journey() {
           {/* Track labels on the left */}
           <div className="track-labels" style={{ height: timelineH + RULER_H }}>
             <div className="ruler-spacer" style={{ height: RULER_H }} />
-            {["EDUCATION", "EXPERIENCE"].map((label, t) => (
+            {[
+              { label: "EDUCATION",   color: "#00f7ff" },
+              { label: "EXPERIENCE",  color: "#ffb400" },
+              { label: "EXPERIENCE²", color: "#ff8c00" },
+            ].map(({ label, color }, t) => (
               <div
                 key={t}
                 className="track-label"
                 style={{ height: TRACK_HEIGHT, marginBottom: TRACK_GAP }}
               >
-                <span style={{ color: t === 0 ? "#00f7ff" : "#ffb400" }}>{label}</span>
+                <span style={{ color }}>{label}</span>
               </div>
             ))}
           </div>
@@ -291,14 +325,12 @@ export default function Journey() {
                       ry={5}
                       fill={
                         isEdu
-                          ? isActive
-                            ? "rgba(0,247,255,0.35)"
-                            : "rgba(0,247,255,0.1)"
-                          : isActive
-                          ? "rgba(255,180,0,0.35)"
-                          : "rgba(255,180,0,0.1)"
+                          ? isActive ? "rgba(0,247,255,0.35)" : "rgba(0,247,255,0.1)"
+                          : item.track === 1
+                          ? isActive ? "rgba(255,180,0,0.35)"  : "rgba(255,180,0,0.1)"
+                          : isActive ? "rgba(255,120,0,0.35)"  : "rgba(255,120,0,0.1)"
                       }
-                      stroke={isEdu ? "#00f7ff" : "#ffb400"}
+                      stroke={isEdu ? "#00f7ff" : item.track === 1 ? "#ffb400" : "#ff7800"}
                       strokeWidth={isActive ? 2 : 1}
                     />
 
@@ -309,7 +341,7 @@ export default function Journey() {
                       width={4}
                       height={TRACK_HEIGHT - 4}
                       rx={3}
-                      fill={isEdu ? "#00f7ff" : "#ffb400"}
+                      fill={isEdu ? "#00f7ff" : item.track === 1 ? "#ffb400" : "#ff7800"}
                     />
 
                     {/* title text */}
@@ -329,7 +361,7 @@ export default function Journey() {
                     <text
                       x={x + 14}
                       y={y + TRACK_HEIGHT * 0.68}
-                      fill={isActive ? "#fff" : (isEdu ? "#00f7ff" : "#ffb400")}
+                      fill={isActive ? "#fff" : isEdu ? "#00f7ff" : item.track === 1 ? "#ffb400" : "#ff7800"}
                       fontSize={10}
                       fontFamily="'Courier New', monospace"
                       clipPath={`url(#clip-${item.id})`}
@@ -353,11 +385,7 @@ export default function Journey() {
           </div>
         </div>
 
-        {/* Legend */}
-        <div className="jv-legend">
-          <span className="legend-item edu">■ Education</span>
-          <span className="legend-item exp">■ Experience</span>
-        </div>
+
       </div>
     </PageWrapper>
   );

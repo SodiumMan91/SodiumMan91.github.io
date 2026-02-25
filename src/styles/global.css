@@ -295,7 +295,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
+  color: #aaa;
   font-family: 'Courier New', monospace;
   font-size: 13px;
   letter-spacing: 0.1em;
@@ -335,13 +335,13 @@ a {
 
 .detail-subtitle {
   margin: 0 0 4px 0;
-  font-size: 14px;
+  font-size: 16px;
   color: #aaa;
 }
 
 .detail-dates {
   margin: 0;
-  font-size: 12px;
+  font-size: 14px;
   color: #aaa;
   font-family: 'Courier New', monospace;
 }
@@ -350,7 +350,7 @@ a {
   margin: 0;
   padding-left: 20px;
   color: #ccc;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.8;
 }
 
@@ -421,7 +421,7 @@ a {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 80px;
+  width: 120px;
   background: #111;
   border-right: 1px solid #1e1e1e;
 }
@@ -441,7 +441,7 @@ a {
 
 .track-label span {
   font-family: 'Courier New', monospace;
-  font-size: 9px;
+  font-size: 14px;
   letter-spacing: 0.1em;
   color: #444;
   text-transform: uppercase;
@@ -511,6 +511,8 @@ a {
     width: 100%;
   }
 }
+
+.legend-item.exp2 { color: #ff7800; }
 /* Make line visually break behind year */
 /* Projects Page */
 
