@@ -2,69 +2,44 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import PageWrapper from "../components/PageWrapper";
 import { journeyItems } from "../data/journeyData";
 
-/* ─── constants ─────────────────────────────────────────── */
-const PX_PER_MONTH = 72;
-const TRACK_HEIGHT = 64;
-const TRACK_GAP = 10;
-const RULER_H = 40;
-const PADDING_RIGHT = 120;
-
+/* ── helpers ── */
 const toMonths = (d) => d.year * 12 + (d.month - 1);
 
-const fmtShort = (d) =>
-  new Date(d.year, d.month - 1).toLocaleString("default", {
-    month: "short",
-    year: "2-digit",
-  });
+const fmtRange = (start, end) => {
+  const fmt = (d) =>
+    new Date(d.year, d.month - 1).toLocaleString("default", {
+      month: "short",
+      year: "numeric",
+    });
+  return `${fmt(start)} — ${fmt(end)}`;
+};
 
-const fmtLong = (d) =>
-  new Date(d.year, d.month - 1).toLocaleString("default", {
-    month: "long",
-    year: "numeric",
-  });
+const duration = (start, end) => {
+  const months = toMonths(end) - toMonths(start);
+  const y = Math.floor(months / 12);
+  const m = months % 12;
+  if (y && m) return `${y}y ${m}mo`;
+  if (y) return `${y}y`;
+  return `${m}mo`;
+};
 
-/* ─── track assignment ───────────────────────────────────────
- *  Track 0 : Education
- *  Track 1 : Experience primary
- *  Track 2 : Experience overflow (longer-duration colliders)
- * ─────────────────────────────────────────────────────────── */
-function assignTracks(items) {
-  const edu = items.filter((i) => i.type === "education");
-  // Sort experience by duration descending so longer items get first pick of primary track
-  const exp = items
-    .filter((i) => i.type === "experience")
-    .map((i) => ({ ...i, _dur: toMonths(i.end) - toMonths(i.start) }))
-    .sort((a, b) => b._dur - a._dur);
-
-  const expTracks = [[], []]; // index 0 = primary (track 1), index 1 = overflow (track 2)
-
-  const assignedExp = exp.map((item) => {
-    const s = toMonths(item.start);
-    const e = toMonths(item.end);
-    for (let sub = 0; sub < 2; sub++) {
-      const fits = expTracks[sub].every(
-        (placed) => e <= toMonths(placed.start) || s >= toMonths(placed.end)
-      );
-      if (fits) {
-        expTracks[sub].push(item);
-        return { ...item, track: sub + 1 };
-      }
-    }
-    // Safety fallback
-    expTracks[1].push(item);
-    return { ...item, track: 2 };
-  });
-
-  return [
-    ...edu.map((i) => ({ ...i, track: 0 })),
-    ...assignedExp,
-  ];
+/* ── group items by year (start year), sorted newest first ── */
+function groupByYear(items) {
+  const sorted = [...items].sort(
+    (a, b) => toMonths(b.start) - toMonths(a.start)
+  );
+  const map = new Map();
+  for (const item of sorted) {
+    const y = item.start.year;
+    if (!map.has(y)) map.set(y, []);
+    map.get(y).push(item);
+  }
+  return Array.from(map.entries()).sort((a, b) => b[0] - a[0]);
 }
 
-/* ─── Slideshow ──────────────────────────────────────────── */
+/* ── Slideshow ── */
 function Slideshow({ images }) {
   const [idx, setIdx] = useState(0);
-
   useEffect(() => {
     if (!images?.length) return;
     setIdx(0);
@@ -73,320 +48,192 @@ function Slideshow({ images }) {
   }, [images]);
 
   if (!images?.length) return null;
-
   return (
-    <div className="slideshow">
+    <div className="jm-slideshow">
       {images.map((src, i) => (
-        <img
-          key={src}
-          src={src}
-          alt=""
-          className={`slide-img ${i === idx ? "active" : ""}`}
-        />
+        <img key={src} src={src} alt="" className={`jm-slide ${i === idx ? "active" : ""}`} />
       ))}
-      <div className="slide-dots">
-        {images.map((_, i) => (
-          <span
-            key={i}
-            className={`dot ${i === idx ? "active" : ""}`}
-            onClick={() => setIdx(i)}
-          />
-        ))}
-      </div>
+      {images.length > 1 && (
+        <div className="jm-dots">
+          {images.map((_, i) => (
+            <button key={i} className={`jm-dot ${i === idx ? "active" : ""}`} onClick={() => setIdx(i)} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-/* ─── Detail Panel ───────────────────────────────────────── */
-function DetailPanel({ item, onClose }) {
+/* ── Modal ── */
+function Modal({ item, onClose }) {
   useEffect(() => {
-    const handler = (e) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    const fn = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", fn);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", fn);
+      document.body.style.overflow = "";
+    };
   }, [onClose]);
 
-  if (!item) return null;
-
-  const typeLabel = item.type === "education" ? "EDUCATION" : "EXPERIENCE";
-
   return (
-    <div className="detail-panel">
-      {/* Left col top: text info */}
-      <div className="detail-header">
-        <button className="detail-close" onClick={onClose} aria-label="Close">
-          ✕
-        </button>
-        <span className={`type-badge ${item.type}`}>{typeLabel}</span>
-        <h2 className="detail-title">{item.title}</h2>
-        <p className="detail-subtitle">{item.subtitle}</p>
-        <p className="detail-dates">
-          {fmtLong(item.start)} &mdash; {fmtLong(item.end)}
-        </p>
-      </div>
-
-      {/* Left col bottom: bullets */}
-      <div className="detail-bullets-wrapper">
-        <ul className="detail-bullets">
-          {item.details.map((d, i) => (
-            <li key={i}>{d}</li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Right col: large slideshow */}
-      <div className="detail-header-right">
-        {item.images?.length > 0
-          ? <Slideshow images={item.images} />
-          : <div className="no-images">No images available</div>
-        }
-      </div>
-    </div>
-  );
-}
-
-/* ─── Main ───────────────────────────────────────────────── */
-export default function Journey() {
-  const [active, setActive] = useState(null);
-  const scrollRef = useRef(null);
-
-  const trackedItems = useMemo(() => assignTracks(journeyItems), []);
-  const numTracks = 3;
-
-  const minMonth = useMemo(
-    () => Math.min(...trackedItems.map((i) => toMonths(i.start))),
-    [trackedItems]
-  );
-  const maxMonth = useMemo(
-    () => Math.max(...trackedItems.map((i) => toMonths(i.end))),
-    [trackedItems]
-  );
-
-  /* ruler ticks — one per quarter */
-  const ticks = useMemo(() => {
-    const result = [];
-    const startYear = Math.floor(minMonth / 12);
-    const endYear = Math.ceil(maxMonth / 12);
-    for (let y = startYear; y <= endYear; y++) {
-      for (let q = 0; q < 4; q++) {
-        const m = y * 12 + q * 3;
-        if (m >= minMonth - 3 && m <= maxMonth + 3) {
-          result.push({ month: m, label: q === 0 ? String(y) : "" });
-        }
-      }
-    }
-    return result;
-  }, [minMonth, maxMonth]);
-
-  /* total canvas width */
-  const totalWidth =
-    (maxMonth - minMonth + 6) * PX_PER_MONTH + PADDING_RIGHT;
-  const timelineH = numTracks * (TRACK_HEIGHT + TRACK_GAP) + TRACK_GAP;
-
-  /* x position: recent = left, old = right  (reversed axis) */
-  const xOf = (months) => (maxMonth - months + 3) * PX_PER_MONTH;
-
-  /* scroll to most recent on mount */
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollLeft = 0;
-  }, []);
-
-  return (
-    <PageWrapper>
-      <div className="jv-page">
-        <h1 className="jv-title">MY JOURNEY</h1>
-
-        {/* ── Detail panel (above timeline) ── */}
-        <div className={`detail-zone ${active ? "has-content" : ""}`}>
-          {active ? (
-            <DetailPanel item={active} onClose={() => setActive(null)} />
-          ) : (
-            <div className="detail-placeholder">
-              <span>Select a clip to view details</span>
+    <div className="jm-backdrop" onClick={onClose}>
+      <div className="jm-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="jm-close" onClick={onClose}>✕</button>
+        <div className="jm-modal-body">
+          <div className="jm-modal-left">
+            <span className={`jm-type-tag ${item.type}`}>
+              {item.type === "education" ? "Education" : "Experience"}
+            </span>
+            <h2 className="jm-modal-title">{item.title}</h2>
+            <p className="jm-modal-sub">{item.subtitle}</p>
+            <p className="jm-modal-range">{fmtRange(item.start, item.end)}</p>
+            {item.link && (
+              <a className="jm-modal-link" href={item.link.url} target="_blank" rel="noopener noreferrer">
+                {item.link.label || item.link.url} ↗
+              </a>
+            )}
+            <ul className="jm-modal-bullets">
+              {item.details.map((d, i) => <li key={i}>{d}</li>)}
+            </ul>
+          </div>
+          {item.images?.length > 0 && (
+            <div className="jm-modal-right">
+              <Slideshow images={item.images} />
             </div>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* ── Timeline editor ── */}
-        <div className="jv-editor">
-          {/* Track labels on the left */}
-          <div className="track-labels" style={{ height: timelineH + RULER_H }}>
-            <div className="ruler-spacer" style={{ height: RULER_H }} />
-            {[
-              { label: "EDUCATION",   color: "#00f7ff" },
-              { label: "EXPERIENCE",  color: "#ffb400" },
-              { label: "EXPERIENCE²", color: "#ff8c00" },
-            ].map(({ label, color }, t) => (
-              <div
-                key={t}
-                className="track-label"
-                style={{ height: TRACK_HEIGHT, marginBottom: TRACK_GAP }}
-              >
-                <span style={{ color }}>{label}</span>
-              </div>
-            ))}
+/* ── Card ── */
+function Card({ item, onClick, innerRef }) {
+  return (
+    <article className="jm-card" ref={innerRef} onClick={() => onClick(item)}>
+      <div className="jm-card-dot" />
+      <div className="jm-card-inner">
+        <header className="jm-card-header">
+          <span className={`jm-type-tag ${item.type}`}>
+            {item.type === "education" ? "Education" : "Experience"}
+          </span>
+          <span className="jm-duration">{duration(item.start, item.end)}</span>
+        </header>
+        <h3 className="jm-card-title">{item.title}</h3>
+        <p className="jm-card-sub">{item.subtitle}</p>
+        <p className="jm-card-range">{fmtRange(item.start, item.end)}</p>
+        <span className="jm-card-cta">View details →</span>
+      </div>
+    </article>
+  );
+}
+
+/* ── Main ── */
+export default function Journey() {
+  const [active, setActive] = useState(null);
+  const [activeYear, setActiveYear] = useState(null);
+  const [lineProgress, setLineProgress] = useState(0);
+
+  const containerRef = useRef(null);
+  const sectionRefs = useRef({});
+  const cardRefs = useRef({});
+
+  const groups = useMemo(() => groupByYear(journeyItems), []);
+
+  /* scroll-driven line growth */
+  useEffect(() => {
+    const onScroll = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const scrolled = Math.max(0, -rect.top + window.innerHeight * 0.3);
+      const total = el.scrollHeight - window.innerHeight * 0.7;
+      setLineProgress(Math.min(1, scrolled / Math.max(1, total)));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  /* active year via IntersectionObserver */
+  useEffect(() => {
+    const observers = [];
+    for (const [year, node] of Object.entries(sectionRefs.current)) {
+      if (!node) continue;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveYear(Number(year)); },
+        { rootMargin: "-20% 0px -60% 0px" }
+      );
+      obs.observe(node);
+      observers.push(obs);
+    }
+    return () => observers.forEach((o) => o.disconnect());
+  }, [groups]);
+
+  /* card fade-in */
+  useEffect(() => {
+    const observers = [];
+    for (const [, node] of Object.entries(cardRefs.current)) {
+      if (!node) continue;
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) { node.classList.add("visible"); obs.disconnect(); }
+        },
+        { rootMargin: "0px 0px -60px 0px" }
+      );
+      obs.observe(node);
+      observers.push(obs);
+    }
+    return () => observers.forEach((o) => o.disconnect());
+  }, [groups]);
+
+  return (
+    <PageWrapper>
+      <div className="jm-page" ref={containerRef}>
+
+        <div className="jm-hero">
+          <p className="jm-hero-label">Career Timeline</p>
+          <h1 className="jm-hero-title">My Journey</h1>
+          <p className="jm-hero-sub">A record of where I've studied and worked.</p>
+        </div>
+
+        <div className="jm-timeline">
+          {/* Scroll-driven line */}
+          <div className="jm-line-track">
+            <div className="jm-line-fill" style={{ transform: `scaleY(${lineProgress})` }} />
           </div>
 
-          {/* Scrollable canvas */}
-          <div className="timeline-scroll" ref={scrollRef}>
-            <svg
-              className="timeline-svg"
-              width={totalWidth}
-              height={timelineH + RULER_H}
-            >
-              {/* ── ruler background ── */}
-              <rect
-                x={0} y={0} width={totalWidth} height={RULER_H}
-                fill="#1a1a1a"
-              />
-
-              {/* ── track backgrounds ── */}
-              {Array.from({ length: numTracks }).map((_, t) => (
-                <rect
-                  key={t}
-                  x={0}
-                  y={RULER_H + t * (TRACK_HEIGHT + TRACK_GAP) + TRACK_GAP}
-                  width={totalWidth}
-                  height={TRACK_HEIGHT}
-                  fill={t % 2 === 0 ? "#151515" : "#111"}
-                />
-              ))}
-
-              {/* ── track dividers ── */}
-              {Array.from({ length: numTracks + 1 }).map((_, t) => (
-                <line
-                  key={t}
-                  x1={0}
-                  x2={totalWidth}
-                  y1={RULER_H + t * (TRACK_HEIGHT + TRACK_GAP)}
-                  y2={RULER_H + t * (TRACK_HEIGHT + TRACK_GAP)}
-                  stroke="#2a2a2a"
-                  strokeWidth={1}
-                />
-              ))}
-
-              {/* ── ruler ticks ── */}
-              {ticks.map(({ month, label }) => {
-                const x = xOf(month);
-                const isMajor = label !== "";
-                return (
-                  <g key={month}>
-                    <line
-                      x1={x} x2={x}
-                      y1={isMajor ? 0 : RULER_H * 0.5}
-                      y2={RULER_H}
-                      stroke={isMajor ? "#00f7ff" : "#333"}
-                      strokeWidth={isMajor ? 1.5 : 1}
+          {/* Year groups */}
+          <div className="jm-groups">
+            {groups.map(([year, items]) => (
+              <section
+                key={year}
+                className="jm-year-group"
+                ref={(el) => (sectionRefs.current[year] = el)}
+              >
+                <div className={`jm-year-marker ${activeYear === year ? "active" : ""}`}>
+                  {year}
+                </div>
+                <div className="jm-cards">
+                  {items.map((item) => (
+                    <Card
+                      key={item.id}
+                      item={item}
+                      onClick={setActive}
+                      innerRef={(el) => (cardRefs.current[item.id] = el)}
                     />
-                    {isMajor && (
-                      <text
-                        x={x + 5}
-                        y={RULER_H * 0.55}
-                        fill="#00f7ff"
-                        fontSize={11}
-                        fontFamily="'Courier New', monospace"
-                        dominantBaseline="middle"
-                      >
-                        {label}
-                      </text>
-                    )}
-                  </g>
-                );
-              })}
-
-              {/* ── item blocks ── */}
-              {trackedItems.map((item) => {
-                const s = toMonths(item.start);
-                const e = toMonths(item.end);
-                const x = xOf(e); // right side of block = end date
-                const w = (e - s) * PX_PER_MONTH;
-                const y =
-                  RULER_H +
-                  item.track * (TRACK_HEIGHT + TRACK_GAP) +
-                  TRACK_GAP;
-                const isActive = active?.id === item.id;
-                const isEdu = item.type === "education";
-
-                return (
-                  <g
-                    key={item.id}
-                    className="clip-group"
-                    onClick={() =>
-                      setActive(isActive ? null : item)
-                    }
-                    style={{ cursor: "pointer" }}
-                  >
-                    {/* block body */}
-                    <rect
-                      x={x + 2}
-                      y={y + 2}
-                      width={w - 4}
-                      height={TRACK_HEIGHT - 4}
-                      rx={5}
-                      ry={5}
-                      fill={
-                        isEdu
-                          ? isActive ? "rgba(0,247,255,0.35)" : "rgba(0,247,255,0.1)"
-                          : item.track === 1
-                          ? isActive ? "rgba(255,180,0,0.35)"  : "rgba(255,180,0,0.1)"
-                          : isActive ? "rgba(255,120,0,0.35)"  : "rgba(255,120,0,0.1)"
-                      }
-                      stroke={isEdu ? "#00f7ff" : item.track === 1 ? "#ffb400" : "#ff7800"}
-                      strokeWidth={isActive ? 2 : 1}
-                    />
-
-                    {/* left accent stripe */}
-                    <rect
-                      x={x + 2}
-                      y={y + 2}
-                      width={4}
-                      height={TRACK_HEIGHT - 4}
-                      rx={3}
-                      fill={isEdu ? "#00f7ff" : item.track === 1 ? "#ffb400" : "#ff7800"}
-                    />
-
-                    {/* title text */}
-                    <text
-                      x={x + 14}
-                      y={y + TRACK_HEIGHT * 0.4}
-                      fill="#fff"
-                      fontSize={12}
-                      fontFamily="'Courier New', monospace"
-                      fontWeight="600"
-                      clipPath={`url(#clip-${item.id})`}
-                    >
-                      {item.title}
-                    </text>
-
-                    {/* date text */}
-                    <text
-                      x={x + 14}
-                      y={y + TRACK_HEIGHT * 0.68}
-                      fill={isActive ? "#fff" : isEdu ? "#00f7ff" : item.track === 1 ? "#ffb400" : "#ff7800"}
-                      fontSize={10}
-                      fontFamily="'Courier New', monospace"
-                      clipPath={`url(#clip-${item.id})`}
-                    >
-                      {fmtShort(item.start)} – {fmtShort(item.end)}
-                    </text>
-
-                    {/* clip mask to keep text inside block */}
-                    <clipPath id={`clip-${item.id}`}>
-                      <rect
-                        x={x + 8}
-                        y={y}
-                        width={w - 16}
-                        height={TRACK_HEIGHT}
-                      />
-                    </clipPath>
-                  </g>
-                );
-              })}
-            </svg>
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
         </div>
 
-
+        <div className="jm-footer-space" />
       </div>
+
+      {active && <Modal item={active} onClose={() => setActive(null)} />}
     </PageWrapper>
   );
 }

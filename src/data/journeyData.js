@@ -63,6 +63,7 @@ export const journeyItems = [
   },
   {
     id: 6,
+    type: "experience",
     title: "Microsoft",
     subtitle: "CX Research Intern",
     start: {month: 3, year:2025},
@@ -75,6 +76,7 @@ export const journeyItems = [
   },
   {
     id: 7,
+    type: "experience",
     title: "IFFCO Tokio General Insurance Co. Ltd",
     subtitle: "AI/ML Intern",
     start: {month: 5, year:2022},
@@ -86,6 +88,7 @@ export const journeyItems = [
   },
   {
     id: 8,
+    type: "experience",
     title: "Centre for Artificial Intelligence and Robotics, DRDO",
     subtitle: "Student Research Trainee",
     start: {month:5, year:2021},

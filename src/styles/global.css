@@ -175,365 +175,491 @@ a {
 }
 
 /* ============================================================
-   JOURNEY PAGE — Video Editor Style
-   Replace the old "Journey Page" block in your CSS
+   JOURNEY PAGE — Premium Editorial
+   Replace entire old journey CSS block with this
    ============================================================ */
 
-/* ── Page shell ── */
-.jv-page {
+/* ── Base ── */
+.jm-page {
+  font-family: 'Courier New', monospace;
   min-height: 100vh;
-  padding: 10px 0 80px 0;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 32px 120px 32px;
+  box-sizing: border-box;
+}
+
+/* ── Hero ── */
+.jm-hero {
+  padding: 80px 0 80px 0;
+  text-align: left;
+}
+
+.jm-hero-label {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #00f7ff;
+  margin: 0 0 20px 0;
+}
+
+.jm-hero-title {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(48px, 7vw, 80px);
+  font-weight: 400;
+  color: #f5f5f5;
+  margin: 0 0 20px 0;
+  line-height: 1.05;
+  letter-spacing: 0.05em;
+  text-shadow: none;
+}
+
+.jm-hero-sub {
+  font-size: 16px;
+  font-weight: 300;
+  color: #666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Timeline shell ── */
+.jm-timeline {
+  display: flex;
+  gap: 0;
+  position: relative;
+}
+
+/* ── Scroll line ── */
+.jm-line-track {
+  position: relative;
+  width: 1px;
+  flex-shrink: 0;
+  margin-right: 56px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.jm-line-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #00f7ff, rgba(0, 247, 255, 0.3));
+  transform-origin: top center;
+  transform: scaleY(0);
+  transition: transform 0.08s linear;
+  box-shadow: 0 0 6px rgba(0, 247, 255, 0.4);
+}
+
+/* ── Groups ── */
+.jm-groups {
+  flex: 1;
+  min-width: 0;
+}
+
+.jm-year-group {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 0 28px;
+  margin-bottom: 64px;
+}
+
+/* ── Year marker ── */
+.jm-year-marker {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 300;
+  color: #444;
+  letter-spacing: 0.05em;
+  padding-top: 6px;
+  text-align: right;
+  transition: color 0.4s ease, font-weight 0.4s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.jm-year-marker.active {
+  color: #f5f5f5;
+  font-weight: 500;
+}
+
+/* ── Cards column ── */
+.jm-cards {
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
 
-.jv-title {
-  text-align: center;
-  color: #00f7ff;
-  text-shadow: 0 0 15px #00f7ff;
+/* ── Card ── */
+.jm-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+  cursor: pointer;
+}
+
+.jm-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Dot on the line */
+.jm-card-dot {
+  position: absolute;
+  left: -65px;
+  top: 22px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  border: 1.5px solid #333;
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  flex-shrink: 0;
+}
+
+.jm-card:hover .jm-card-dot {
+  background: #00f7ff;
+  border-color: #00f7ff;
+  box-shadow: 0 0 8px rgba(0, 247, 255, 0.5);
+}
+
+/* Card inner */
+.jm-card-inner {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 24px 28px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.jm-card:hover .jm-card-inner {
+  transform: scale(1.01);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Card header row */
+.jm-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+/* Type tag */
+.jm-type-tag {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.jm-type-tag.education {
+  color: #00f7ff !important;
+  background: rgba(0, 247, 255, 0.08);
+  border: 1px solid rgba(0, 247, 255, 0.2);
+}
+
+.jm-type-tag.experience {
+  color: #ffb400 !important;
+  background: rgba(255, 180, 0, 0.08);
+  border: 1px solid rgba(255, 180, 0, 0.2);
+}
+
+/* Duration */
+.jm-duration {
+  font-size: 12px;
+  font-weight: 300;
+  color: #555;
+  letter-spacing: 0.03em;
+}
+
+/* Title */
+.jm-card-title {
   font-family: 'Courier New', monospace;
-  letter-spacing: 0.2em;
-  font-size: 28px;
-  margin-bottom: 32px;
+  font-size: 22px;
+  font-weight: 400;
+  color: #f0f0f0;
+  margin: 0 0 6px 0;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
 }
 
-/* ── Detail zone (preview monitor above timeline) ── */
-.detail-zone {
-  margin: 0 24px 0 24px;
-  border-radius: 10px 10px 0 0;
-  background: #0a0a0a;
-  border: 1px solid #1e1e1e;
-  border-bottom: none;
-  min-height: 100px;
-  transition: min-height 0.4s ease;
-  overflow: hidden;
+/* Subtitle */
+.jm-card-sub {
+  font-size: 14px;
+  font-weight: 300;
+  color: #888;
+  margin: 0 0 8px 0;
 }
 
-.detail-zone.has-content {
-  min-height: 420px;
+/* Date range */
+.jm-card-range {
+  font-size: 12px;
+  color: #555;
+  margin: 0 0 16px 0;
+  letter-spacing: 0.03em;
 }
 
-.detail-placeholder {
+/* CTA hint */
+.jm-card-cta {
+  font-size: 12px;
+  color: #444;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
+
+.jm-card:hover .jm-card-cta {
+  color: #00f7ff;
+}
+
+/* ── Footer spacing ── */
+.jm-footer-space {
+  height: 40px;
+}
+
+/* ── Modal backdrop ── */
+.jm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 56px;
-  color: #333;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-/* ── Detail panel content ── */
-.detail-panel {
-  padding: 24px 28px 20px 28px;
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  grid-template-rows: auto auto;
-  column-gap: 32px;
-  row-gap: 16px;
-  animation: panelIn 0.3s ease;
-  height: 100%;
+  padding: 24px;
   box-sizing: border-box;
+}
+
+/* ── Modal ── */
+.jm-modal {
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 820px;
+  max-height: 85vh;
+  overflow-y: auto;
   position: relative;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
+  animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes panelIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.detail-header {
-  grid-column: 1;
-  grid-row: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  position: relative;
-}
+.jm-modal::-webkit-scrollbar { width: 4px; }
+.jm-modal::-webkit-scrollbar-track { background: transparent; }
+.jm-modal::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-.detail-header-right {
-  grid-column: 2;
-  grid-row: 1 / 3;
-  min-height: 0;
-}
-
-.detail-bullets-wrapper {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-.detail-close {
+/* Close button */
+.jm-close {
   position: absolute;
-  top: 0;
-  right: 0;
-  background: none;
-  border: 1px solid #333;
-  color: #888;
-  width: 28px;
-  height: 28px;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  font-size: 12px;
+  border: 1px solid #333;
+  background: none;
+  color: #666;
+  font-size: 13px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.2s ease;
+  transition: border-color 0.2s, color 0.2s;
   z-index: 10;
 }
 
-.detail-close:hover {
+.jm-close:hover {
   border-color: #00f7ff;
   color: #00f7ff;
 }
 
-.no-images {
-  width: 100%;
-  height: 100%;
-  min-height: 320px;
+/* Modal body grid */
+.jm-modal-body {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+}
+
+.jm-modal-left {
+  padding: 40px 36px 40px 40px;
+}
+
+.jm-modal-right {
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
+  align-items: stretch;
+}
+
+/* Modal typography */
+.jm-modal-title {
   font-family: 'Courier New', monospace;
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  border: 1px dashed #222;
-  border-radius: 8px;
+  font-size: 28px;
+  font-weight: 400;
+  color: #f5f5f5;
+  margin: 12px 0 8px 0;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
 }
 
-.type-badge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 3px;
-  font-family: 'Courier New', monospace;
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  font-weight: bold;
-  margin-bottom: 8px;
+.jm-modal-sub {
+  font-size: 15px;
+  font-weight: 300;
+  color: #888;
+  margin: 0 0 8px 0;
 }
 
-.type-badge.education {
-  background: rgba(0, 247, 255, 0.12);
-  color: #00f7ff;
-  border: 1px solid #00f7ff44;
-}
-
-.type-badge.experience {
-  background: rgba(255, 180, 0, 0.12);
-  color: #ffb400;
-  border: 1px solid #ffb40044;
-}
-
-.detail-title {
-  margin: 0 0 4px 0;
-  font-size: 18px;
-  color: #fff;
-  font-family: 'Courier New', monospace;
-}
-
-.detail-subtitle {
-  margin: 0 0 4px 0;
-  font-size: 14px;
-  color: #aaa;
-}
-
-.detail-dates {
-  margin: 0;
+.jm-modal-range {
   font-size: 12px;
   color: #555;
-  font-family: 'Courier New', monospace;
+  margin: 0 0 20px 0;
+  letter-spacing: 0.03em;
 }
 
-.detail-bullets {
+.jm-modal-link {
+  display: inline-block;
+  font-size: 12px;
+  color: #00f7ff;
+  text-decoration: none;
+  border: 1px solid rgba(0, 247, 255, 0.25);
+  padding: 5px 12px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  letter-spacing: 0.05em;
+  transition: background 0.2s ease;
+}
+
+.jm-modal-link:hover {
+  background: rgba(0, 247, 255, 0.08);
+}
+
+.jm-modal-bullets {
   margin: 0;
-  padding-left: 20px;
-  color: #ccc;
-  font-size: 13px;
-  line-height: 1.8;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.detail-bullets li {
-  margin-bottom: 2px;
+.jm-modal-bullets li {
+  font-size: 14px;
+  font-weight: 300;
+  color: #bbb;
+  line-height: 1.6;
+  padding-left: 16px;
+  position: relative;
+}
+
+.jm-modal-bullets li::before {
+  content: "–";
+  position: absolute;
+  left: 0;
+  color: #444;
 }
 
 /* ── Slideshow ── */
-.slideshow {
+.jm-slideshow {
   position: relative;
   width: 100%;
-  height: 100%;
-  min-height: 320px;
-  border-radius: 8px;
   overflow: hidden;
-  background: #000;
+  border-radius: 0 16px 16px 0;
+  background: #0a0a0a;
+  min-height: 280px;
 }
 
-.slide-img {
+.jm-slide {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.6s ease;
 }
 
-.slide-img.active {
+.jm-slide.active {
   opacity: 1;
 }
 
-.slide-dots {
+.jm-dots {
   position: absolute;
-  bottom: 6px;
+  bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 5px;
+  gap: 6px;
   z-index: 2;
 }
 
-.dot {
+.jm-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  background: rgba(255, 255, 255, 0.25);
   cursor: pointer;
+  padding: 0;
   transition: background 0.2s;
 }
 
-.dot.active {
-  background: #00f7ff;
+.jm-dot.active {
+  background: #fff;
 }
-
-/* ── Editor shell ── */
-.jv-editor {
-  display: flex;
-  margin: 0 24px;
-  border: 1px solid #1e1e1e;
-  border-radius: 0 0 10px 10px;
-  background: #0e0e0e;
-  overflow: hidden;
-}
-
-/* ── Track labels (left sidebar) ── */
-.track-labels {
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  width: 80px;
-  background: #111;
-  border-right: 1px solid #1e1e1e;
-}
-
-.ruler-spacer {
-  border-bottom: 1px solid #1e1e1e;
-  background: #1a1a1a;
-}
-
-.track-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid #1e1e1e;
-  flex-shrink: 0;
-}
-
-.track-label span {
-  font-family: 'Courier New', monospace;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  color: #444;
-  text-transform: uppercase;
-}
-
-/* ── Scrollable SVG canvas ── */
-.timeline-scroll {
-  overflow-x: auto;
-  overflow-y: hidden;
-  flex: 1;
-  scrollbar-width: thin;
-  scrollbar-color: #00f7ff33 #111;
-}
-
-.timeline-scroll::-webkit-scrollbar {
-  height: 6px;
-}
-
-.timeline-scroll::-webkit-scrollbar-track {
-  background: #111;
-}
-
-.timeline-scroll::-webkit-scrollbar-thumb {
-  background: #00f7ff44;
-  border-radius: 3px;
-}
-
-.timeline-svg {
-  display: block;
-}
-
-/* ── Clip hover effect ── */
-.clip-group rect:first-child {
-  transition: fill 0.2s ease;
-}
-
-.clip-group:hover rect:first-child {
-  filter: brightness(1.4);
-}
-
-/* ── Legend ── */
-.jv-legend {
-  display: flex;
-  gap: 24px;
-  justify-content: center;
-  margin-top: 16px;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-}
-
-.legend-item.edu { color: #00f7ff; }
-.legend-item.exp { color: #ffb400; }
 
 /* ── Responsive ── */
-@media (max-width: 600px) {
-  .jv-editor,
-  .detail-zone {
-    margin: 0 8px;
+@media (max-width: 700px) {
+  .jm-page {
+    padding: 0 20px 80px 20px;
   }
 
-  .detail-header {
-    flex-direction: column;
+  .jm-line-track {
+    margin-right: 32px;
   }
 
-  .detail-header-right {
-    width: 100%;
+  .jm-year-group {
+    grid-template-columns: 40px 1fr;
+    gap: 0 16px;
+  }
+
+  .jm-card-dot {
+    left: -48px;
+  }
+
+  .jm-modal-body {
+    grid-template-columns: 1fr;
+  }
+
+  .jm-modal-right {
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    min-height: 220px;
+  }
+
+  .jm-slideshow {
+    border-radius: 0 0 16px 16px;
+  }
+
+  .jm-modal-left {
+    padding: 32px 24px 24px 24px;
   }
 }
-
-.legend-item.exp2 { color: #ff7800; }
-
-/* ── Detail link ── */
-.detail-link {
-  display: inline-block;
-  margin-top: 10px;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  color: #00f7ff;
-  text-decoration: none;
-  border: 1px solid #00f7ff44;
-  padding: 4px 10px;
-  border-radius: 4px;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-  letter-spacing: 0.05em;
-}
-
-.detail-link:hover {
-  background: rgba(0, 247, 255, 0.1);
-  box-shadow: 0 0 8px rgba(0, 247, 255, 0.3);
-}
-
 
 /* Make line visually break behind year */
 /* Projects Page */
