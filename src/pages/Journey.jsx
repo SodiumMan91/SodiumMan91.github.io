@@ -82,14 +82,14 @@ function Modal({ item, onClose }) {
         <button className="jm-close" onClick={onClose}>✕</button>
         <div className="jm-modal-body">
           <div className="jm-modal-left">
-            <span className={`jm-type-tag ${item.type}`}>
-              {item.type === "education" ? "Education" : "Experience"}
+            <span className={`jm-type-tag ${item.type?.toLowerCase().trim()}`}>
+              {item.type?.toLowerCase().trim() === "education" ? "Education" : "Experience"}
             </span>
             <h2 className="jm-modal-title">{item.title}</h2>
             <p className="jm-modal-sub">{item.subtitle}</p>
             <p className="jm-modal-range">{fmtRange(item.start, item.end)}</p>
             {item.link && (
-              <a className="jm-modal-link" href={item.link.url} target="_blank" rel="noopener noreferrer">
+              <a className="jm-modal-link" href={item.link.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                 {item.link.label || item.link.url} ↗
               </a>
             )}
@@ -115,8 +115,8 @@ function Card({ item, onClick, innerRef }) {
       <div className="jm-card-dot" />
       <div className="jm-card-inner">
         <header className="jm-card-header">
-          <span className={`jm-type-tag ${item.type}`}>
-            {item.type === "education" ? "Education" : "Experience"}
+          <span className={`jm-type-tag ${item.type?.toLowerCase().trim()}`}>
+            {item.type?.toLowerCase().trim() === "education" ? "Education" : "Experience"}
           </span>
           <span className="jm-duration">{duration(item.start, item.end)}</span>
         </header>

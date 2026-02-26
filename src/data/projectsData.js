@@ -23,5 +23,11 @@ ggplot(airquality, aes(x = Day,
     id: 2,
     title: "Multiomics UMAP",
     summary: "Combined, linked UMAP for RNA seq and ATAC embeddings"
+  },
+  {
+    id: 3,
+    title: "Mental Health Prediction",
+    summary: "Predicting the prevalence of poor mental health in neighborhoods using demographic, socioeconomic, and environmental factors",
+    link: "https://github.com/SodiumMan91/mental-health-prediction"
   }
 ];

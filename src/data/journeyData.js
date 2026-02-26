@@ -11,7 +11,7 @@ export const journeyItems = [
       "President, DSI Student Council",
       "Courses: Machine Learning for Functional Genomics, Statistical Inference"
     ],
-    images: []
+    images: ["/images/dsi1.png", "/images/dsi2.jpg", "/images/dsi3.jpg"]
   },
   {
     id: 2,
@@ -47,7 +47,8 @@ export const journeyItems = [
     details: [
       "Built computer vision pipeline for tracking and analyzing behaviour of real and 3D printed fish"
     ],
-    images:[]
+    images:["/images/Betta-fish.png"],
+    link: { url: "https://drive.google.com/file/d/1kryghI-92uplHDxzF9cz1faNnTNqK5qo/view?usp=sharing", label: "Poster"}
   },
   {
     id: 5,
