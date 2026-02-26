@@ -110,11 +110,14 @@ a {
   margin: 0 auto;
 }
 
+/* Navbar buttons — match existing nav-link style */
 .nav-link {
-  color: white;
-  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  padding: 0;
   font-size: 16px;
-  transition: 0.3s ease;
 }
 
 /* Hover effect */
@@ -706,7 +709,7 @@ a {
 .pm-hero-sub {
   font-size: 16px;
   font-weight: 300;
-  color: #aaa;
+  color: #666;
   margin: 0;
   line-height: 1.6;
 }
@@ -724,6 +727,14 @@ a {
 
 @media (max-width: 560px) {
   .pm-grid { grid-template-columns: 1fr; }
+
+  /* Remove vertical transform on mobile to prevent overlap */
+  .pm-card {
+    transform: none;
+  }
+  .pm-card.visible {
+    transform: none;
+  }
 }
 
 /* ── Card ── */
@@ -775,7 +786,7 @@ a {
 .pm-card-summary {
   font-size: 13px;
   font-weight: 300;
-  color: #aaa;
+  color: #888;
   margin: 0;
   line-height: 1.6;
   flex: 1;
@@ -783,7 +794,7 @@ a {
 
 .pm-card-cta {
   font-size: 11px;
-  color: #aaa;
+  color: #444;
   letter-spacing: 0.06em;
   transition: color 0.2s ease;
   margin-top: 4px;
@@ -893,7 +904,7 @@ a {
 .pm-modal-summary {
   font-size: 14px;
   font-weight: 300;
-  color: #aaa;
+  color: #888;
   margin: 0;
   line-height: 1.6;
 }

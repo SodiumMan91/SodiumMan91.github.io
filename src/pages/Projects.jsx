@@ -116,7 +116,7 @@ export default function Projects() {
         ([entry]) => {
           if (entry.isIntersecting) { node.classList.add("visible"); obs.disconnect(); }
         },
-        { rootMargin: "0px 0px -60px 0px" }
+        { rootMargin: "0px 0px 0px 0px", threshold: 0.05 }
       );
       obs.observe(node);
       observers.push(obs);
