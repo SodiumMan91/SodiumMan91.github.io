@@ -178,29 +178,25 @@ a {
 }
 
 /* ============================================================
-   JOURNEY PAGE — Premium Editorial
-   Replace entire old journey CSS block with this
+   JOURNEY PAGE — Split Left/Right Layout
    ============================================================ */
 
-/* ── Base ── */
 .jm-page {
   font-family: 'Courier New', monospace;
-  min-height: 100vh;
   width: 100%;
-  max-width: 860px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 32px 120px 32px;
+  padding: 0 32px 0 32px;
   box-sizing: border-box;
 }
 
 /* ── Hero ── */
 .jm-hero {
-  padding: 80px 0 80px 0;
+  padding: 80px 0 60px 0;
   text-align: left;
 }
 
 .jm-hero-label {
-  font-family: 'Courier New', monospace;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
@@ -223,24 +219,71 @@ a {
 .jm-hero-sub {
   font-size: 16px;
   font-weight: 300;
-  color: #aaa;
+  color: #666;
   margin: 0;
   line-height: 1.6;
 }
 
-/* ── Timeline shell ── */
-.jm-timeline {
-  display: flex;
+/* ── Column headers ── */
+.jm-col-headers {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  margin-bottom: 24px;
+  gap: 0;
+}
+
+.jm-col-header {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.jm-col-header--left {
+  color: #00f7ff;
+  text-align: right;
+  padding-right: 28px;
+}
+
+.jm-col-header--right {
+  color: #ffb400;
+  text-align: left;
+  padding-left: 28px;
+}
+
+.jm-col-header-spacer {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ── Split timeline shell ── */
+.jm-split-timeline {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
   gap: 0;
   position: relative;
 }
 
-/* ── Scroll line ── */
-.jm-line-track {
+/* ── Left & right columns ── */
+.jm-col {
+  position: relative;   /* cards are absolutely positioned inside */
+}
+
+
+
+/* ── Centre line + year markers ── */
+.jm-centre {
   position: relative;
+}
+
+.jm-line-track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 1px;
-  flex-shrink: 0;
-  margin-right: 56px;
   background: rgba(255, 255, 255, 0.06);
 }
 
@@ -257,31 +300,22 @@ a {
   box-shadow: 0 0 6px rgba(0, 247, 255, 0.4);
 }
 
-/* ── Groups ── */
-.jm-groups {
-  flex: 1;
-  min-width: 0;
-}
-
-.jm-year-group {
-  display: grid;
-  grid-template-columns: 52px 1fr;
-  gap: 0 28px;
-  margin-bottom: 64px;
-}
-
-/* ── Year marker ── */
 .jm-year-marker {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
   font-family: 'Courier New', monospace;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 300;
-  color: #aaa;
+  color: #444;
   letter-spacing: 0.05em;
-  padding-top: 6px;
-  text-align: right;
+  text-align: center;
   transition: color 0.4s ease, font-weight 0.4s ease;
   white-space: nowrap;
   user-select: none;
+  background: #0d0d0d;
+  padding: 3px 6px;
+  z-index: 2;
 }
 
 .jm-year-marker.active {
@@ -289,33 +323,22 @@ a {
   font-weight: 500;
 }
 
-/* ── Cards column ── */
-.jm-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 /* ── Card ── */
 .jm-card {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
+  position: absolute;
+  width: 100%;
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
+  transition: opacity 0.55s ease;
   cursor: pointer;
 }
 
 .jm-card.visible {
   opacity: 1;
-  transform: translateY(0);
 }
 
-/* Dot on the line */
+/* Dot — on the centre-facing edge */
 .jm-card-dot {
   position: absolute;
-  left: -65px;
   top: 22px;
   width: 7px;
   height: 7px;
@@ -323,7 +346,15 @@ a {
   background: #1a1a1a;
   border: 1.5px solid #333;
   transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-  flex-shrink: 0;
+  z-index: 2;
+}
+
+.jm-card--left .jm-card-dot {
+  right: -34px;   /* halfway into the centre gutter */
+}
+
+.jm-card--right .jm-card-dot {
+  left: -34px;
 }
 
 .jm-card:hover .jm-card-dot {
@@ -334,12 +365,20 @@ a {
 
 /* Card inner */
 .jm-card-inner {
-  flex: 1;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 12px;
-  padding: 24px 28px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  padding: 20px 22px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+              border-color 0.25s ease, background 0.25s ease;
+}
+
+.jm-card--left .jm-card-inner {
+  text-align: right;
+}
+
+.jm-card--right .jm-card-inner {
+  text-align: left;
 }
 
 .jm-card:hover .jm-card-inner {
@@ -349,12 +388,16 @@ a {
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* Card header row */
+/* Card header */
 .jm-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
+}
+
+.jm-card--left .jm-card-header {
+  flex-direction: row-reverse;  /* tag on the right for left column */
 }
 
 /* Type tag */
@@ -384,39 +427,38 @@ a {
   font-size: 12px;
   font-weight: 300;
   color: #aaa;
-  letter-spacing: 0.03em;
 }
 
 /* Title */
 .jm-card-title {
   font-family: 'Courier New', monospace;
-  font-size: 22px;
+  font-size: 16px;
   font-weight: 400;
   color: #f0f0f0;
-  margin: 0 0 6px 0;
-  line-height: 1.2;
+  margin: 0 0 5px 0;
+  line-height: 1.3;
   letter-spacing: 0.02em;
 }
 
 /* Subtitle */
 .jm-card-sub {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 300;
   color: #aaa;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
 }
 
 /* Date range */
 .jm-card-range {
-  font-size: 12px;
+  font-size: 11px;
   color: #aaa;
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0;
   letter-spacing: 0.03em;
 }
 
-/* CTA hint */
+/* CTA */
 .jm-card-cta {
-  font-size: 12px;
+  font-size: 11px;
   color: #aaa;
   letter-spacing: 0.05em;
   transition: color 0.2s ease;
@@ -426,10 +468,8 @@ a {
   color: #00f7ff;
 }
 
-/* ── Footer spacing ── */
-.jm-footer-space {
-  height: 40px;
-}
+/* ── Footer ── */
+.jm-footer-space { height: 40px; }
 
 /* ── Modal backdrop ── */
 .jm-backdrop {
@@ -469,7 +509,6 @@ a {
 .jm-modal::-webkit-scrollbar-track { background: transparent; }
 .jm-modal::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-/* Close button */
 .jm-close {
   position: absolute;
   top: 20px;
@@ -479,7 +518,7 @@ a {
   border-radius: 50%;
   border: 1px solid #333;
   background: none;
-  color: #666;
+  color: #aaa;
   font-size: 13px;
   cursor: pointer;
   display: flex;
@@ -494,7 +533,6 @@ a {
   color: #00f7ff;
 }
 
-/* Modal body grid */
 .jm-modal-body {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -502,6 +540,9 @@ a {
 
 .jm-modal-left {
   padding: 40px 36px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .jm-modal-right {
@@ -510,40 +551,40 @@ a {
   align-items: stretch;
 }
 
-/* Modal typography */
 .jm-modal-title {
   font-family: 'Courier New', monospace;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 400;
   color: #f5f5f5;
-  margin: 12px 0 8px 0;
-  line-height: 1.15;
+  margin: 8px 0 6px 0;
+  line-height: 1.2;
   letter-spacing: 0.02em;
 }
 
 .jm-modal-sub {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 300;
-  color: #aaa;
-  margin: 0 0 8px 0;
+  color: #888;
+  margin: 0;
 }
 
 .jm-modal-range {
   font-size: 12px;
   color: #aaa;
-  margin: 0 0 20px 0;
+  margin: 0 0 8px 0;
   letter-spacing: 0.03em;
 }
 
 .jm-modal-link {
   display: inline-block;
+  align-self: flex-start;
   font-size: 12px;
   color: #00f7ff;
   text-decoration: none;
   border: 1px solid rgba(0, 247, 255, 0.25);
   padding: 5px 12px;
   border-radius: 6px;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   letter-spacing: 0.05em;
   transition: background 0.2s ease;
 }
@@ -564,7 +605,7 @@ a {
 .jm-modal-bullets li {
   font-size: 14px;
   font-weight: 300;
-  color: #bbb;
+  color: #aaa;
   line-height: 1.6;
   padding-left: 16px;
   position: relative;
@@ -574,7 +615,7 @@ a {
   content: "–";
   position: absolute;
   left: 0;
-  color: #aaa;
+  color: #444;
 }
 
 /* ── Slideshow ── */
@@ -597,9 +638,7 @@ a {
   transition: opacity 0.6s ease;
 }
 
-.jm-slide.active {
-  opacity: 1;
-}
+.jm-slide.active { opacity: 1; }
 
 .jm-dots {
   position: absolute;
@@ -622,28 +661,50 @@ a {
   transition: background 0.2s;
 }
 
-.jm-dot.active {
-  background: #fff;
-}
+.jm-dot.active { background: #fff; }
 
-/* ── Responsive ── */
+/* ── Responsive — stack vertically on mobile ── */
 @media (max-width: 700px) {
-  .jm-page {
-    padding: 0 20px 80px 20px;
+  .jm-page { padding: 0 16px 80px 16px; }
+
+  .jm-split-timeline {
+    grid-template-columns: 1fr;
   }
 
-  .jm-line-track {
-    margin-right: 32px;
+  .jm-col-headers {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 
-  .jm-year-group {
-    grid-template-columns: 40px 1fr;
-    gap: 0 16px;
+  .jm-col-header--left,
+  .jm-col-header--right {
+    text-align: left;
+    padding-left: 0;
+    padding-right: 0;
   }
 
-  .jm-card-dot {
-    left: -48px;
+  .jm-col-header-spacer { display: none; }
+
+  .jm-centre { display: none; }
+
+  .jm-col--left,
+  .jm-col--right {
+    align-items: stretch;
   }
+
+  .jm-card--left .jm-card-inner,
+  .jm-card--right .jm-card-inner {
+    text-align: left;
+  }
+
+  .jm-card--left .jm-card-header {
+    flex-direction: row;
+  }
+
+  .jm-card-dot { display: none; }
+
+  .jm-card { transform: none; }
+  .jm-card.visible { transform: none; }
 
   .jm-modal-body {
     grid-template-columns: 1fr;
@@ -651,17 +712,12 @@ a {
 
   .jm-modal-right {
     border-left: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
-    min-height: 220px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    min-height: 200px;
   }
 
-  .jm-slideshow {
-    border-radius: 0 0 16px 16px;
-  }
-
-  .jm-modal-left {
-    padding: 32px 24px 24px 24px;
-  }
+  .jm-slideshow { border-radius: 0 0 16px 16px; }
+  .jm-modal-left { padding: 28px 20px; }
 }
 
 /* ============================================================
@@ -709,7 +765,7 @@ a {
 .pm-hero-sub {
   font-size: 16px;
   font-weight: 300;
-  color: #666;
+  color: #aaa;
   margin: 0;
   line-height: 1.6;
 }
@@ -786,7 +842,7 @@ a {
 .pm-card-summary {
   font-size: 13px;
   font-weight: 300;
-  color: #888;
+  color: #aaa;
   margin: 0;
   line-height: 1.6;
   flex: 1;
@@ -794,7 +850,7 @@ a {
 
 .pm-card-cta {
   font-size: 11px;
-  color: #444;
+  color: #888;
   letter-spacing: 0.06em;
   transition: color 0.2s ease;
   margin-top: 4px;

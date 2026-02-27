@@ -54,7 +54,7 @@ function Home() {
 
               <FadeInSection>
                 <p className="about-text">
-                  I'm a Data Science graduate from Columbia University with experience applying
+                  I'm a Data Science graduate from Columbia University with experience in applying
                   machine learning and NLP to real-world problems across healthcare, finance,
                   and behavioral research.
                 </p>
@@ -75,6 +75,14 @@ function Home() {
                   Beyond technical work, I've served as President of the Data Science Institute
                   Student Council and as a Teaching Assistant for Deep Learning for NLP,
                   mentoring students on transformer architectures and applied modeling practices.
+
+                </p>
+              </FadeInSection>
+
+              <FadeInSection>
+                <p className="about-text">
+
+                  Outside of work, you'll find me knitting 🧶, dancing 💃, sewing 🧵, or cooking 🍳.
                 </p>
               </FadeInSection>
 
