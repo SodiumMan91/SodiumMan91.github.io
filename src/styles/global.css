@@ -426,7 +426,7 @@ a {
 .jm-duration {
   font-size: 12px;
   font-weight: 300;
-  color: #aaa;
+  color: #555;
 }
 
 /* Title */
@@ -444,14 +444,14 @@ a {
 .jm-card-sub {
   font-size: 13px;
   font-weight: 300;
-  color: #aaa;
+  color: #888;
   margin: 0 0 6px 0;
 }
 
 /* Date range */
 .jm-card-range {
   font-size: 11px;
-  color: #aaa;
+  color: #555;
   margin: 0 0 12px 0;
   letter-spacing: 0.03em;
 }
@@ -459,7 +459,7 @@ a {
 /* CTA */
 .jm-card-cta {
   font-size: 11px;
-  color: #aaa;
+  color: #444;
   letter-spacing: 0.05em;
   transition: color 0.2s ease;
 }
@@ -518,7 +518,7 @@ a {
   border-radius: 50%;
   border: 1px solid #333;
   background: none;
-  color: #aaa;
+  color: #666;
   font-size: 13px;
   cursor: pointer;
   display: flex;
@@ -570,7 +570,7 @@ a {
 
 .jm-modal-range {
   font-size: 12px;
-  color: #aaa;
+  color: #555;
   margin: 0 0 8px 0;
   letter-spacing: 0.03em;
 }
@@ -605,7 +605,7 @@ a {
 .jm-modal-bullets li {
   font-size: 14px;
   font-weight: 300;
-  color: #aaa;
+  color: #bbb;
   line-height: 1.6;
   padding-left: 16px;
   position: relative;
@@ -663,35 +663,43 @@ a {
 
 .jm-dot.active { background: #fff; }
 
-/* ── Responsive — stack vertically on mobile ── */
+/* ── Responsive — single column on mobile ── */
 @media (max-width: 700px) {
-  .jm-page { padding: 0 16px 80px 16px; }
+  .jm-page { padding: 0 16px 0 16px; }
 
-  .jm-split-timeline {
-    grid-template-columns: 1fr;
-  }
-
-  .jm-col-headers {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .jm-col-header--left,
-  .jm-col-header--right {
-    text-align: left;
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .jm-col-header-spacer { display: none; }
-
+  /* Hide the split structure entirely */
+  .jm-col-headers { display: none; }
   .jm-centre { display: none; }
 
-  .jm-col--left,
-  .jm-col--right {
-    align-items: stretch;
+  /* Stack the two columns vertically, full width, natural flow */
+  .jm-split-timeline {
+    display: flex;
+    flex-direction: column;
+    height: auto !important;  /* override inline height from JS */
+    gap: 0;
   }
 
+  .jm-col {
+    position: static !important;  /* override position:relative */
+    height: auto !important;      /* override inline height from JS */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 8px;
+  }
+
+  /* Cards must be static flow, not absolute */
+  .jm-card {
+    position: static !important;
+    top: auto !important;
+    transform: none;
+    width: 100%;
+    opacity: 1 !important;  /* always visible on mobile, skip fade */
+  }
+
+  .jm-card.visible { transform: none; }
+
+  /* Reset card inner alignment */
   .jm-card--left .jm-card-inner,
   .jm-card--right .jm-card-inner {
     text-align: left;
@@ -703,9 +711,32 @@ a {
 
   .jm-card-dot { display: none; }
 
-  .jm-card { transform: none; }
-  .jm-card.visible { transform: none; }
+  /* Add a small section label above each column */
+  .jm-col--left::before {
+    content: "Education";
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #00f7ff;
+    padding: 24px 0 12px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
 
+  .jm-col--right::before {
+    content: "Experience";
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #ffb400;
+    padding: 24px 0 12px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* Modal */
   .jm-modal-body {
     grid-template-columns: 1fr;
   }
@@ -728,11 +759,10 @@ a {
 /* ── Page ── */
 .pm-page {
   font-family: 'Courier New', monospace;
-  min-height: 100vh;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 32px 120px 32px;
+  padding: 0 32px 0 32px;
   box-sizing: border-box;
 }
 
@@ -765,7 +795,7 @@ a {
 .pm-hero-sub {
   font-size: 16px;
   font-weight: 300;
-  color: #aaa;
+  color: #666;
   margin: 0;
   line-height: 1.6;
 }
@@ -783,14 +813,6 @@ a {
 
 @media (max-width: 560px) {
   .pm-grid { grid-template-columns: 1fr; }
-
-  /* Remove vertical transform on mobile to prevent overlap */
-  .pm-card {
-    transform: none;
-  }
-  .pm-card.visible {
-    transform: none;
-  }
 }
 
 /* ── Card ── */
@@ -803,6 +825,15 @@ a {
 .pm-card.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+@media (max-width: 700px) {
+  .pm-card,
+  .pm-card.visible {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 .pm-card.clickable {
@@ -842,7 +873,7 @@ a {
 .pm-card-summary {
   font-size: 13px;
   font-weight: 300;
-  color: #aaa;
+  color: #888;
   margin: 0;
   line-height: 1.6;
   flex: 1;
@@ -850,7 +881,7 @@ a {
 
 .pm-card-cta {
   font-size: 11px;
-  color: #888;
+  color: #444;
   letter-spacing: 0.06em;
   transition: color 0.2s ease;
   margin-top: 4px;
@@ -1066,7 +1097,7 @@ a {
   }
 
   .pm-page {
-    padding: 0 20px 80px 20px;
+    padding: 0 20px 0 20px;
   }
 }
 
