@@ -89,7 +89,7 @@ function ProjectCard({ project, onClick, cardRef }) {
 
   return (
     <article
-      className={`pm-card ${expandable ? "clickable" : ""}`}
+      className={`pm-card visible ${expandable ? "clickable" : ""}`}
       ref={cardRef}
       onClick={() => expandable && onClick(project)}
     >

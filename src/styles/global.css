@@ -818,9 +818,8 @@ a {
 
 /* ── Card ── */
 .pm-card {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  opacity: 1;
+  transform: none;
 }
 
 .pm-card.visible {
@@ -828,21 +827,11 @@ a {
   transform: translateY(0);
 }
 
-@media (max-width: 700px) {
-  .pm-card,
-  .pm-card.visible {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
-}
-
 .pm-card.clickable {
   cursor: pointer;
 }
 
 .pm-card-inner {
-  height: 100%;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 12px;
@@ -877,7 +866,6 @@ a {
   color: #888;
   margin: 0;
   line-height: 1.6;
-  flex: 1;
 }
 
 .pm-card-cta {
