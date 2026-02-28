@@ -22,12 +22,19 @@ ggplot(airquality, aes(x = Day,
   {
     id: 2,
     title: "Multiomics UMAP",
-    summary: "Combined, linked UMAP for RNA seq and ATAC embeddings"
+    summary: "Combined, linked UMAP for RNA seq and ATAC embeddings",
+    images: ["/images/umap.png"]
   },
   {
     id: 3,
     title: "Mental Health Prediction",
     summary: "Predicting the prevalence of poor mental health in neighborhoods using demographic, socioeconomic, and environmental factors",
     link: "https://github.com/SodiumMan91/mental-health-prediction"
+  },
+  {
+    id: 4,
+    title: "Exploratory Data Analysis of Golub Gene Expression",
+    summary: "Exploring the Golub Gene Expression Dataset. We will explore various EDA techniques to identify significant genes, reduce dimensionality, and derive insights.",
+    link: "https://pranavbidve.github.io/golub-gene/"
   }
 ];
