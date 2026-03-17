@@ -98,5 +98,20 @@ export const journeyItems = [
       "Researched extension of semi-supervised Snowball model for bi-directional related components extraction from plain text"
     ],
     images: []
+  },
+  {
+    id: 9,
+    type: "experience",
+    title: "Cheng Lab, Columbia Stem Cell Initiative, Columbia University Irving Medical Centre",
+    subitle: "Data Analyst and Research Aide",
+    start: {month:2, year: 2026},
+    details: [
+      "Own and build end-to-end multi-omics analysis pipelines integrating genomics, transcriptomics, and metabolomics data to identify molecular signatures of diet-gene interactions relevant to target discovery.", 
+      "Apply dimensionality reduction (PCA, UMAP) and differential expression analysis to high-dimensional biological datasets to extract interpretable signals across experimental conditions.",
+      "Conduct pathway analysis to map molecular perturbations to biological processes, bridging computational findings with translational research goals.",
+      "Contribute directly to wet lab experiments alongside computational work, providing end-to-end ownership from bench to analysis pipeline.",
+      "Significantly accelerated research timelines by independently driving experiments and studies from design through analysis."
+    ],
+    images: []
   }
 ];

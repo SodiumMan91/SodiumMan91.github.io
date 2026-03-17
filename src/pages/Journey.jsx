@@ -3,7 +3,8 @@ import PageWrapper from "../components/PageWrapper";
 import { journeyItems } from "../data/journeyData";
 
 /* ── helpers ── */
-const toMonths = (d) => d.year * 12 + (d.month - 1);
+const NOW = { year: new Date().getFullYear(), month: new Date().getMonth() + 1 };
+const toMonths = (d) => (d ?? NOW).year * 12 + ((d ?? NOW).month - 1);
 
 const fmtRange = (start, end) => {
   const fmt = (d) =>
@@ -11,11 +12,11 @@ const fmtRange = (start, end) => {
       month: "short",
       year: "numeric",
     });
-  return `${fmt(start)} — ${fmt(end)}`;
+  return `${fmt(start)} — ${end ? fmt(end) : "Present"}`;
 };
 
 const duration = (start, end) => {
-  const months = toMonths(end) - toMonths(start) + 1;
+  const months = toMonths(end ?? NOW) - toMonths(start) + 1;
   const y = Math.floor(months / 12);
   const m = months % 12;
   if (y && m) return `${y}y ${m}mo`;
@@ -144,13 +145,13 @@ function computeLayout(years, eduItems, expItems, cardHeights) {
   const groupByYear = (items) => {
     const map = {};
     for (const item of items) {
-      const y = item.end.year;
+      const y = (item.end ?? NOW).year;
       if (!map[y]) map[y] = [];
       map[y].push(item);
     }
     // sort each group by end date desc (most recent first within the year)
     for (const y of Object.keys(map)) {
-      map[y].sort((a, b) => toMonths(b.end) - toMonths(a.end));
+      map[y].sort((a, b) => toMonths(b.end ?? NOW) - toMonths(a.end ?? NOW));
     }
     return map;
   };
@@ -215,16 +216,16 @@ export default function Journey() {
   const cardRefs = useRef({});
 
   const years = useMemo(() => {
-    const ys = new Set(journeyItems.map(i => i.end.year));
+    const ys = new Set(journeyItems.map(i => (i.end ?? NOW).year));
     return Array.from(ys).sort((a, b) => b - a);
   }, []);
 
   const eduItems = useMemo(() =>
     journeyItems.filter(i => i.type?.toLowerCase().trim() === "education")
-      .sort((a, b) => toMonths(b.end) - toMonths(a.end)), []);
+      .sort((a, b) => toMonths(b.end ?? NOW) - toMonths(a.end ?? NOW)), []);
   const expItems = useMemo(() =>
     journeyItems.filter(i => i.type?.toLowerCase().trim() !== "education")
-      .sort((a, b) => toMonths(b.end) - toMonths(a.end)), []);
+      .sort((a, b) => toMonths(b.end ?? NOW) - toMonths(a.end ?? NOW)), []);
 
   // recompute layout whenever card heights change
   const layout = useMemo(() =>
