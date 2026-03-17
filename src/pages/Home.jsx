@@ -26,7 +26,7 @@ function Home() {
               <h1 className="hero-name-landing">Naman Bareja</h1>
               <p className="hero-tagline-landing">
                 Data Science & NLP Researcher | Deep Learning | Social & Biomedical Data |
-                MS Data Science, Columbia University | Seeking Full-Time Data Science Roles
+                MS Data Science, Columbia University
               </p>
             </section>
 
