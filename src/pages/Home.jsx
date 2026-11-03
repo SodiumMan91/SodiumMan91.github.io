@@ -62,9 +62,10 @@ function Home() {
 
               <FadeInSection>
                 <p className="about-text">
-                  My work spans building hierarchical NLP pipelines for public health research,
-                  developing computer vision systems for behavioral quantification, and
-                  re-engineering large-scale credit risk models across 500K+ financial records.
+                  My work spans single-cell and transcriptomic analysis of early-onset colorectal
+                  cancer at the Cheng Lab, hierarchical NLP pipelines for public health research,
+                  computer vision systems for behavioral quantification, and re-engineering
+                  large-scale credit risk models across 500K+ financial records.
                   I'm particularly interested in applied machine learning roles where rigorous
                   modeling directly informs strategic or operational decision-making.
                 </p>

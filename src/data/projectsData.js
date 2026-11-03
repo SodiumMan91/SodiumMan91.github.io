@@ -1,6 +1,26 @@
 export const projects = [
   {
     id: 1,
+    title: "Multiome UMAP Integration via Coupling Regularizer",
+    summary: "Extended UMAP for single-cell multiome data (RNA + ATAC) with a graph-level coupling regularizer",
+    details: [
+      "Improved cluster separation by 43–86% over concatenation and WNN baselines on a 34,774-cell dataset",
+      "Sparse-matrix pipeline cut memory use by 98.8%"
+    ],
+    images: ["/images/umap.png"]
+  },
+  {
+    id: 2,
+    title: "Neighborhood Mental Health Prevalence Prediction",
+    summary: "Predicting poor mental health prevalence across 5,289 New York census tracts using CDC, EPA, and hospital data",
+    details: [
+      "Led a team of 5 integrating CDC, EPA, and hospital datasets (GeoPandas)",
+      "XGBoost and Random Forest models reached 78% F1, with SHAP identifying 10+ key predictors"
+    ],
+    link: "https://github.com/SodiumMan91/mental-health-prediction"
+  },
+  {
+    id: 3,
     title: "ggplot Neon Theme",
     summary: "Cyberpunk / Neon inspired ggplot theme",
     link: "https://github.com/SodiumMan91/cyberpunk",
@@ -18,18 +38,6 @@ ggplot(airquality, aes(x = Day,
     geom_point(size = 2.5) +
     theme_cpunk()
 `
-  },
-  {
-    id: 2,
-    title: "Multiomics UMAP",
-    summary: "Combined, linked UMAP for RNA seq and ATAC embeddings",
-    images: ["/images/umap.png"]
-  },
-  {
-    id: 3,
-    title: "Mental Health Prediction",
-    summary: "Predicting the prevalence of poor mental health in neighborhoods using demographic, socioeconomic, and environmental factors",
-    link: "https://github.com/SodiumMan91/mental-health-prediction"
   },
   {
     id: 4,

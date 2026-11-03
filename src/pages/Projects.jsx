@@ -66,6 +66,12 @@ function Modal({ project, onClose }) {
               </a>
             )}
 
+            {project.details?.length > 0 && (
+              <ul className="jm-modal-bullets">
+                {project.details.map((d, i) => <li key={i}>{d}</li>)}
+              </ul>
+            )}
+
             {project.content && (
               <pre className="pm-modal-code">{project.content}</pre>
             )}
@@ -85,7 +91,7 @@ function Modal({ project, onClose }) {
 
 /* ── Card ── */
 function ProjectCard({ project, onClick, cardRef }) {
-  const expandable = !!(project.link || project.content || project.images?.length);
+  const expandable = !!(project.link || project.content || project.details?.length || project.images?.length);
 
   return (
     <article
